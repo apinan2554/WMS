@@ -3,7 +3,7 @@ WORKDIR /src
 COPY WH_Logistic.csproj .
 RUN dotnet restore
 COPY . .
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
