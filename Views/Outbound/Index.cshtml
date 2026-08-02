@@ -1,0 +1,66 @@
+@model List<WH_Logistic.Models.SalesOrder>
+@{
+    ViewData["Title"] = "จ่ายสินค้า (Outbound)";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4><i class="bi bi-box-arrow-up"></i> รายการออเดอร์ (Sales Orders)</h4>
+    <a asp-action="CreateOrder" class="btn btn-success"><i class="bi bi-plus-lg"></i> สร้างออเดอร์ใหม่</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>เลขที่ออเดอร์</th>
+                <th>ลูกค้า</th>
+                <th>วันที่</th>
+                <th>รายการ</th>
+                <th>สถานะ</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td><code>@order.OrderNumber</code></td>
+                    <td>@order.CustomerName</td>
+                    <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@order.Items.Count รายการ (@order.Items.Sum(i => i.Quantity) ชิ้น)</td>
+                    <td>
+                        @switch (order.Status)
+                        {
+                            case WH_Logistic.Models.OrderStatus.Pending:
+                                <span class="badge bg-warning">รอดำเนินการ</span>
+                                break;
+                            case WH_Logistic.Models.OrderStatus.PickingInProgress:
+                                <span class="badge bg-info">กำลังหยิบ</span>
+                                break;
+                            case WH_Logistic.Models.OrderStatus.Picked:
+                                <span class="badge bg-primary">หยิบแล้ว</span>
+                                break;
+                            case WH_Logistic.Models.OrderStatus.Packed:
+                                <span class="badge bg-success">แพ็คแล้ว</span>
+                                break;
+                            case WH_Logistic.Models.OrderStatus.Shipped:
+                                <span class="badge bg-dark">จัดส่งแล้ว</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        @if (order.Status == WH_Logistic.Models.OrderStatus.Pending)
+                        {
+                            <form method="post" asp-action="GeneratePickingList" class="d-inline">
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-list-task"></i> สร้าง Picking List
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

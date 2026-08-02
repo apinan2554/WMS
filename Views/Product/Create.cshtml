@@ -1,0 +1,71 @@
+@model WH_Logistic.Models.ProductMaster
+@{
+    ViewData["Title"] = "เพิ่มสินค้าใหม่";
+    var categories = ViewBag.Categories as List<WH_Logistic.Models.ProductCategory>;
+}
+
+<h4><i class="bi bi-plus-lg"></i> เพิ่มสินค้าใหม่</h4>
+
+<form method="post" asp-action="Create">
+    <div class="card">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">รหัสสินค้า (SKU) <span class="text-danger">*</span></label>
+                    <input type="text" name="SKU" class="form-control" value="@Model?.SKU" required placeholder="เช่น ELEC-003" />
+                    <span class="text-danger">@Html.ValidationMessage("SKU")</span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">ชื่อสินค้า <span class="text-danger">*</span></label>
+                    <input type="text" name="ProductName" class="form-control" value="@Model?.ProductName" required placeholder="ชื่อสินค้า" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">ประเภทสินค้า <span class="text-danger">*</span></label>
+                    <select name="CategoryId" class="form-select" required>
+                        <option value="">-- เลือกประเภท --</option>
+                        @if (categories != null)
+                        {
+                            @foreach (var c in categories)
+                            {
+                                <option value="@c.CategoryId" selected="@(Model?.CategoryId == c.CategoryId)">@c.CategoryName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">บาร์โค้ด</label>
+                    <input type="text" name="Barcode" class="form-control" value="@Model?.Barcode" placeholder="หมายเลขบาร์โค้ด" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">กว้าง (cm)</label>
+                    <input type="number" name="Width" class="form-control" value="@Model?.Width" step="0.1" min="0" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">ยาว (cm)</label>
+                    <input type="number" name="Length" class="form-control" value="@Model?.Length" step="0.1" min="0" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">สูง (cm)</label>
+                    <input type="number" name="Height" class="form-control" value="@Model?.Height" step="0.1" min="0" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">น้ำหนัก (kg)</label>
+                    <input type="number" name="Weight" class="form-control" value="@Model?.Weight" step="0.1" min="0" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">สต็อกขั้นต่ำ (Min) <span class="text-danger">*</span></label>
+                    <input type="number" name="MinStock" class="form-control" value="@(Model?.MinStock ?? 10)" min="0" required />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">สต็อกสูงสุด (Max) <span class="text-danger">*</span></label>
+                    <input type="number" name="MaxStock" class="form-control" value="@(Model?.MaxStock ?? 100)" min="0" required />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> บันทึก</button>
+        <a asp-action="Index" class="btn btn-secondary">ยกเลิก</a>
+    </div>
+</form>

@@ -1,0 +1,185 @@
+@model List<WH_Logistic.Models.InventoryBalance>
+@{
+    ViewData["Title"] = "Dashboard";
+    var categories = ViewBag.Categories as List<WH_Logistic.Models.ProductCategory>;
+    var zones = ViewBag.Zones as List<WH_Logistic.Models.Zone>;
+    var lowStockItems = ViewBag.LowStockItems as List<WH_Logistic.Models.InventoryBalance>;
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <i class="bi bi-box-seam fs-2 text-primary"></i>
+                <h5 class="mt-2">@ViewBag.TotalProducts</h5>
+                <small class="text-muted">สินค้าทั้งหมด</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center border-success">
+            <div class="card-body">
+                <i class="bi bi-stack fs-2 text-success"></i>
+                <h5 class="mt-2">@ViewBag.TotalStock</h5>
+                <small class="text-muted">จำนวนสต็อกรวม</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <i class="bi bi-geo-alt fs-2 text-warning"></i>
+                <h5 class="mt-2">@ViewBag.UsedLocations / @ViewBag.TotalLocations</h5>
+                <small class="text-muted">ตำแหน่งที่ใช้งาน</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center border-info">
+            <div class="card-body">
+                <i class="bi bi-pie-chart fs-2 text-info"></i>
+                <h5 class="mt-2">@ViewBag.CapacityPercent%</h5>
+                <small class="text-muted">พื้นที่ใช้งาน</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-pie-chart-fill"></i> Warehouse Capacity
+            </div>
+            <div class="card-body" style="height:200px;">
+                <canvas id="capacityChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle-fill"></i> สินค้าสต็อกต่ำ (@(lowStockItems?.Count ?? 0))
+            </div>
+            <div class="card-body p-0" style="max-height:200px;overflow-y:auto;">
+                @if (lowStockItems != null && lowStockItems.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in lowStockItems)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>@item.Product!.ProductName</span>
+                                <span class="badge bg-danger">@item.Quantity / Min: @item.Product.MinStock</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-center text-muted py-3">ไม่มีสินค้าสต็อกต่ำ</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter -->
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">ค้นหา (ชื่อ/SKU)</label>
+                <input type="text" name="search" class="form-control" value="@ViewBag.Search" placeholder="ค้นหาสินค้า..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">ประเภทสินค้า</label>
+                <select name="categoryId" class="form-select">
+                    <option value="">-- ทั้งหมด --</option>
+                    @if (categories != null)
+                    {
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c.CategoryId" selected="@(ViewBag.CategoryId != null && (int)ViewBag.CategoryId == c.CategoryId)">@c.CategoryName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">โซน</label>
+                <select name="zoneId" class="form-select">
+                    <option value="">-- ทั้งหมด --</option>
+                    @if (zones != null)
+                    {
+                        @foreach (var z in zones)
+                        {
+                            <option value="@z.ZoneId" selected="@(ViewBag.ZoneId != null && (int)ViewBag.ZoneId == z.ZoneId)">@z.ZoneName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> กรอง</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Inventory Table -->
+<div class="card">
+    <div class="card-header"><i class="bi bi-table"></i> รายการสต็อกคงเหลือ</div>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>SKU</th>
+                    <th>ชื่อสินค้า</th>
+                    <th>ประเภท</th>
+                    <th>โซน</th>
+                    <th>ตำแหน่ง</th>
+                    <th class="text-end">คงเหลือ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var b in Model)
+                    {
+                        <tr class="@(b.Quantity <= (b.Product?.MinStock ?? 0) ? "table-danger" : "")">
+                            <td><code>@b.Product?.SKU</code></td>
+                            <td>@b.Product?.ProductName</td>
+                            <td>@b.Product?.Category?.CategoryName</td>
+                            <td>@b.Location?.Zone?.ZoneName</td>
+                            <td><span class="badge bg-secondary">@b.Location?.BinCode</span></td>
+                            <td class="text-end fw-bold">@b.Quantity</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-4">ไม่พบข้อมูลสต็อก</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const ctx = document.getElementById('capacityChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['ใช้งาน', 'ว่าง'],
+            datasets: [{
+                data: [@ViewBag.UsedLocations, @(ViewBag.TotalLocations - ViewBag.UsedLocations)],
+                backgroundColor: ['#0d6efd', '#e9ecef']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+</script>
+}

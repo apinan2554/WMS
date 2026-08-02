@@ -1,0 +1,48 @@
+@model WH_Logistic.Models.PickingList
+@{
+    ViewData["Title"] = "Packing & Verification";
+}
+
+<h4><i class="bi bi-box2"></i> แพ็คสินค้าและยืนยัน (Packing & Verification)</h4>
+<p class="text-muted">Picking: @Model.PickingNumber | ออเดอร์: @Model.SalesOrder?.OrderNumber</p>
+
+<div class="card mb-3">
+    <div class="card-header bg-success text-white">
+        <i class="bi bi-check-circle"></i> สรุปรายการที่หยิบได้
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>สินค้า</th>
+                    <th>SKU</th>
+                    <th>ตำแหน่ง</th>
+                    <th class="text-center">จำนวนที่หยิบ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.Product?.ProductName</td>
+                        <td><code>@item.Product?.SKU</code></td>
+                        <td><span class="badge bg-secondary">@item.Location?.BinCode</span></td>
+                        <td class="text-center fw-bold">@item.PickedQty</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i> กรุณาตรวจสอบรายการทั้งหมดก่อนกดยืนยัน การแพ็คจะทำการตัดสต็อกออกจากคลังทันที
+</div>
+
+<form method="post" asp-action="ConfirmPack">
+    <input type="hidden" name="pickingId" value="@Model.PickingId" />
+    <button type="submit" class="btn btn-success btn-lg">
+        <i class="bi bi-box2-fill"></i> ยืนยันแพ็คสินค้าและตัดสต็อก
+    </button>
+    <a asp-action="Index" class="btn btn-secondary btn-lg">ยกเลิก</a>
+</form>

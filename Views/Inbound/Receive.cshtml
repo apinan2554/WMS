@@ -1,0 +1,129 @@
+@model WH_Logistic.Models.GoodsReceipt
+@{
+    ViewData["Title"] = "สแกนรับสินค้าและจัดเก็บ";
+    var locations = ViewBag.Locations as List<WH_Logistic.Models.Location>;
+}
+
+<h4><i class="bi bi-qr-code-scan"></i> รับสินค้าและจัดเก็บ - @Model.GRNNumber</h4>
+<p class="text-muted">PO: @Model.PONumber | สถานะ: @Model.Status</p>
+
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-upc-scan"></i> สแกนบาร์โค้ดสินค้า</div>
+    <div class="card-body">
+        <input type="text" id="barcodeInput" class="form-control form-control-lg" placeholder="สแกนบาร์โค้ดที่นี่..." autofocus />
+        <small class="text-muted">สแกนบาร์โค้ดหรือพิมพ์รหัสสินค้าเพื่อค้นหา</small>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>สินค้า</th>
+                <th>ประเภท</th>
+                <th>บาร์โค้ด</th>
+                <th>จำนวนที่สั่ง</th>
+                <th>จำนวนที่รับ</th>
+                <th>ตำแหน่งจัดเก็บ</th>
+                <th>สถานะ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr class="@(item.IsPutAway ? "table-success" : "")">
+                    <td>@item.Product?.ProductName<br /><code>@item.Product?.SKU</code></td>
+                    <td>@item.Product?.Category?.CategoryName</td>
+                    <td><code>@item.Product?.Barcode</code></td>
+                    <td class="text-center">@item.ExpectedQty</td>
+                    <td>
+                        @if (!item.IsPutAway)
+                        {
+                            <form method="post" asp-action="ReceiveItem" class="d-inline">
+                                <input type="hidden" name="grnId" value="@Model.GRNId" />
+                                <input type="hidden" name="grnItemId" value="@item.GRNItemId" />
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="receivedQty" value="@item.ExpectedQty" min="0" class="form-control" style="width:60px" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">ยืนยัน</button>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">@item.ReceivedQty</span>
+                        }
+                    </td>
+                    <td>
+                        @if (!item.IsPutAway && item.ReceivedQty > 0)
+                        {
+                            <form method="post" asp-action="PutAway">
+                                <input type="hidden" name="grnId" value="@Model.GRNId" />
+                                <input type="hidden" name="grnItemId" value="@item.GRNItemId" />
+                                <div class="input-group input-group-sm">
+                                    <select name="locationId" class="form-select form-select-sm" required>
+                                        <option value="">-- เลือกตำแหน่ง --</option>
+                                        @if (locations != null)
+                                        {
+                                            @foreach (var loc in locations.Where(l => l.Zone!.CategoryId == item.Product!.CategoryId))
+                                            {
+                                                <option value="@loc.LocationId">@loc.BinCode (@loc.Zone?.ZoneName)</option>
+                                            }
+                                        }
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i> จัดเก็บ</button>
+                                </div>
+                                <small class="text-info">* แนะนำ: เฉพาะตำแหน่งในโซนที่ตรงกับประเภทสินค้า</small>
+                            </form>
+                        }
+                        else if (item.IsPutAway)
+                        {
+                            <span class="badge bg-success">@item.PutAwayLocation?.BinCode</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">กรุณายืนยันจำนวนก่อน</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.IsPutAway)
+                        {
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> จัดเก็บแล้ว</span>
+                        }
+                        else if (item.ReceivedQty > 0)
+                        {
+                            <span class="badge bg-warning">รอจัดเก็บ</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">รอรับ</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> กลับ</a>
+
+@section Scripts {
+<script>
+document.getElementById('barcodeInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const barcode = this.value.trim();
+        // Highlight matching row
+        document.querySelectorAll('tbody tr').forEach(row => {
+            const barcodeCell = row.querySelectorAll('td')[2];
+            if (barcodeCell && barcodeCell.textContent.trim() === barcode) {
+                row.classList.add('table-warning');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                row.classList.remove('table-warning');
+            }
+        });
+        this.value = '';
+    }
+});
+</script>
+}

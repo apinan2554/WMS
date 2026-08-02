@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "สร้างใบรับสินค้าใหม่";
+    var products = ViewBag.Products as List<WH_Logistic.Models.ProductMaster>;
+}
+
+<h4><i class="bi bi-plus-lg"></i> สร้างใบรับสินค้า (GRN) ใหม่</h4>
+
+<form method="post" asp-action="Create" id="grnForm">
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">เลขที่ PO (ถ้ามี)</label>
+                    <input type="text" name="poNumber" class="form-control" placeholder="PO-XXXXX" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <span>รายการสินค้า</span>
+            <button type="button" class="btn btn-sm btn-success" onclick="addItem()"><i class="bi bi-plus"></i> เพิ่มรายการ</button>
+        </div>
+        <div class="card-body" id="itemsContainer">
+            <div class="row g-2 mb-2 item-row">
+                <div class="col-md-7">
+                    <select name="productIds" class="form-select" required>
+                        <option value="">-- เลือกสินค้า --</option>
+                        @if (products != null)
+                        {
+                            @foreach (var p in products)
+                            {
+                                <option value="@p.ProductId">@p.SKU - @p.ProductName (@p.Category?.CategoryName)</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" name="quantities" class="form-control" placeholder="จำนวน" min="1" required />
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-outline-danger" onclick="this.closest('.item-row').remove()"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> บันทึกใบรับสินค้า</button>
+        <a asp-action="Index" class="btn btn-secondary">ยกเลิก</a>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+function addItem() {
+    const container = document.getElementById('itemsContainer');
+    const row = container.querySelector('.item-row').cloneNode(true);
+    row.querySelectorAll('input').forEach(i => i.value = '');
+    row.querySelector('select').value = '';
+    container.appendChild(row);
+}
+</script>
+}

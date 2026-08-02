@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process Flow - Warehouse Management Controls</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f0f4f8;padding:30px 20px}
+h1{text-align:center;color:#1a365d;margin-bottom:8px}
+.sub{text-align:center;color:#4a5568;margin-bottom:30px}
+.container{max-width:1100px;margin:0 auto}
+.section{margin-bottom:40px}
+.stitle{background:#2b6cb0;color:#fff;padding:10px 20px;border-radius:8px;display:inline-block;margin-bottom:15px;font-size:1rem}
+.row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.box{padding:12px 16px;border-radius:8px;text-align:center;min-width:140px;font-size:0.85rem;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.start{background:#c6f6d5;border:2px solid #38a169;border-radius:40px}
+.proc{background:#fff;border:2px solid #3182ce}
+.decide{background:#fefcbf;border:2px solid #d69e2e}
+.err{background:#fed7d7;border:2px solid #e53e3e}
+.ok{background:#c6f6d5;border:2px solid #38a169}
+.end{background:#e2e8f0;border:2px solid #4a5568;border-radius:40px}
+.sys{background:#e9d8fd;border:2px solid #805ad5}
+.arr{font-size:1.4rem;color:#4a5568}
+.arrd{display:block;text-align:center;font-size:1.4rem;color:#4a5568;margin:4px 0}
+.branch{display:flex;gap:30px;justify-content:center;margin:10px 0}
+.bpath{text-align:center}
+.blabel{font-size:0.8rem;font-weight:bold;margin-bottom:4px}
+.bred{color:#e53e3e}
+.bgreen{color:#38a169}
+table{width:100%;border-collapse:collapse;margin-top:15px;font-size:0.85rem}
+th,td{border:1px solid #cbd5e0;padding:8px;text-align:center}
+th{background:#2b6cb0;color:#fff}
+td:first-child{text-align:left;font-weight:600}
+.chk{color:#38a169;font-weight:bold}
+.crs{color:#e53e3e}
+</style>
+</head>
+<body>
+<h1>Warehouse Management Controls - Process Flow</h1>
+<p class="sub">Flowchart and Access Control</p>
+<div class="container">
+
+
+<!-- Module 1 -->
+<div class="section">
+<div class="stitle">Module 1: Inbound and Put-away</div>
+<div class="row">
+<div class="box start">START<br>Goods Arrive</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Create GRN<br>(PO Number)</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Scan Barcode<br>Receive Items</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Confirm Qty<br>Received</div>
+</div>
+<div class="arrd">&darr;</div>
+<div class="row">
+<div class="box sys">System Suggest<br>Location (Smart)</div>
+<span class="arr">&rarr;</span>
+<div class="box decide">Check: Product<br>Category = Zone?</div>
+</div>
+<div class="branch">
+<div class="bpath">
+<div class="blabel bred">NO - Wrong Zone</div>
+<div class="box err">BLOCKED!<br>Error Alert<br>Cannot Save</div>
+</div>
+<div class="bpath">
+<div class="blabel bgreen">YES - Correct</div>
+<div class="box ok">Save Put-away<br>Update Stock</div>
+<div class="arrd">&darr;</div>
+<div class="box end">COMPLETE</div>
+</div>
+</div>
+</div>
+
+<!-- Module 2 -->
+<div class="section">
+<div class="stitle">Module 2: Inventory Control</div>
+<h3 style="color:#2b6cb0;margin:10px 0">2.1 Stock Transfer</h3>
+<div class="row">
+<div class="box start">Select Product<br>and Source</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Select<br>Destination</div>
+<span class="arr">&rarr;</span>
+<div class="box decide">Check: Product<br>Category = New Zone?</div>
+</div>
+<div class="branch">
+<div class="bpath">
+<div class="blabel bred">NO - Blocked</div>
+<div class="box err">Cannot Transfer</div>
+</div>
+<div class="bpath">
+<div class="blabel bgreen">YES - OK</div>
+<div class="box ok">Transfer Success<br>Update Both Locations</div>
+</div>
+</div>
+
+<h3 style="color:#2b6cb0;margin:20px 0 10px">2.2 Cycle Count</h3>
+<div class="row">
+<div class="box start">Select Location</div>
+<span class="arr">&rarr;</span>
+<div class="box sys">System loads<br>Current Qty</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Enter Actual<br>Count</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Calculate<br>Variance</div>
+<span class="arr">&rarr;</span>
+<div class="box ok">Adjust Stock<br>+ Save Log</div>
+</div>
+
+<h3 style="color:#2b6cb0;margin:20px 0 10px">2.3 Low Stock Alert</h3>
+<div class="row">
+<div class="box sys">System checks<br>all products</div>
+<span class="arr">&rarr;</span>
+<div class="box decide">Total Qty<br>&lt;= Min Stock?</div>
+<span class="arr">&rarr;</span>
+<div class="box err">Alert on<br>Dashboard</div>
+</div>
+</div>
+
+<!-- Module 3 -->
+<div class="section">
+<div class="stitle">Module 3: Outbound and Picking</div>
+<div class="row">
+<div class="box start">Receive<br>Sales Order</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Create Order<br>Select Products</div>
+<span class="arr">&rarr;</span>
+<div class="box sys">Generate Picking List<br>(Sorted by Location)</div>
+</div>
+<div class="arrd">&darr;</div>
+<p style="text-align:center;color:#4a5568;font-size:0.85rem">Optimized Picking Path - shortest route</p>
+<div class="arrd">&darr;</div>
+<div class="row">
+<div class="box proc">Staff picks<br>items</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Confirm<br>picked qty</div>
+<span class="arr">&rarr;</span>
+<div class="box proc">Packing<br>Verification</div>
+<span class="arr">&rarr;</span>
+<div class="box ok">Confirm Pack<br>Deduct Stock</div>
+<span class="arr">&rarr;</span>
+<div class="box end">Ready to Ship</div>
+</div>
+</div>
+
+<!-- Module 4 -->
+<div class="section">
+<div class="stitle">Module 4: Dashboard</div>
+<div class="row">
+<div class="box sys">Total Products</div>
+<div class="box sys">Total Stock</div>
+<div class="box sys">Locations Used</div>
+<div class="box sys">Capacity %</div>
+<div class="box err">Low Stock Alerts</div>
+</div>
+</div>
+
+<!-- Business Rules -->
+<div class="section">
+<div class="stitle">Business Rules</div>
+<table>
+<tr><th style="text-align:left">Rule</th><th>If Violated</th></tr>
+<tr><td>1 Zone = 1 Product Category ONLY</td><td class="crs">BLOCKED + Error</td></tr>
+<tr><td>Put-away: Category must match Zone</td><td class="crs">Cannot Save</td></tr>
+<tr><td>Transfer: Validate destination Zone</td><td class="crs">Cannot Transfer</td></tr>
+<tr><td>All actions logged (Audit Trail)</td><td class="chk">Auto-logged (who, what, where, when)</td></tr>
+</table>
+</div>
+
+<!-- Role Access -->
+<div class="section">
+<div class="stitle">Role-Based Access Control</div>
+<table>
+<tr>
+<th style="text-align:left">Module</th>
+<th>Admin</th><th>Factory Mgr</th><th>Inbound Staff</th><th>Outbound Staff</th><th>Warehouse</th><th>Transport</th>
+</tr>
+<tr><td>Dashboard</td><td class="chk">Y</td><td class="chk">Y</td><td class="chk">Y</td><td class="chk">Y</td><td class="chk">Y</td><td class="chk">Y</td></tr>
+<tr><td>Products (Master)</td><td class="chk">Y</td><td class="chk">Y</td><td class="crs">-</td><td class="crs">-</td><td class="crs">-</td><td class="crs">-</td></tr>
+<tr><td>Inbound</td><td class="chk">Y</td><td class="chk">Y</td><td class="chk">Y</td><td class="crs">-</td><td class="chk">Y</td><td class="crs">-</td></tr>
+<tr><td>Inventory</td><td class="chk">Y</td><td class="chk">Y</td><td class="chk">Y</td><td class="crs">-</td><td class="chk">Y</td><td class="crs">-</td></tr>
+<tr><td>Outbound</td><td class="chk">Y</td><td class="chk">Y</td><td class="crs">-</td><td class="chk">Y</td><td class="chk">Y</td><td class="chk">Y</td></tr>
+<tr><td>User Management</td><td class="chk">Y</td><td class="crs">-</td><td class="crs">-</td><td class="crs">-</td><td class="crs">-</td><td class="crs">-</td></tr>
+</table>
+</div>
+
+</div>
+</body>
+</html>

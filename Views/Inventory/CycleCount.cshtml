@@ -1,0 +1,87 @@
+@model List<WH_Logistic.Models.CycleCount>
+@{
+    ViewData["Title"] = "นับสต็อก (Cycle Count)";
+    var locations = ViewBag.Locations as List<WH_Logistic.Models.Location>;
+}
+
+<h4><i class="bi bi-123"></i> นับสต็อกประจำปี (Cycle Count)</h4>
+
+<div class="card mb-4">
+    <div class="card-header">สร้างรายการนับสต็อกใหม่</div>
+    <div class="card-body">
+        <form method="post" asp-action="CreateCycleCount" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label">เลือกตำแหน่งที่จะนับ</label>
+                <select name="locationId" class="form-select" required>
+                    <option value="">-- เลือกตำแหน่ง --</option>
+                    @if (locations != null)
+                    {
+                        @foreach (var l in locations)
+                        {
+                            <option value="@l.LocationId">@l.BinCode (@l.Zone?.ZoneName)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg"></i> สร้างรายการนับ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-list-check"></i> รายการนับสต็อก</div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>เลขที่</th>
+                    <th>ตำแหน่ง</th>
+                    <th>โซน</th>
+                    <th>วันที่</th>
+                    <th>ผู้นับ</th>
+                    <th>สถานะ</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cc in Model)
+                {
+                    <tr>
+                        <td><code>@cc.CountNumber</code></td>
+                        <td><span class="badge bg-secondary">@cc.Location?.BinCode</span></td>
+                        <td>@cc.Location?.Zone?.ZoneName</td>
+                        <td>@cc.CountDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@cc.CountBy?.FullName</td>
+                        <td>
+                            @switch (cc.Status)
+                            {
+                                case WH_Logistic.Models.CycleCountStatus.InProgress:
+                                    <span class="badge bg-warning">กำลังนับ</span>
+                                    break;
+                                case WH_Logistic.Models.CycleCountStatus.Completed:
+                                    <span class="badge bg-success">เสร็จสิ้น</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @if (cc.Status == WH_Logistic.Models.CycleCountStatus.InProgress)
+                            {
+                                <a asp-action="CycleCountDetail" asp-route-id="@cc.CycleCountId" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i> ดำเนินการ
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="CycleCountDetail" asp-route-id="@cc.CycleCountId" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i> ดู
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

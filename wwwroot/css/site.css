@@ -1,0 +1,68 @@
+/* WH Logistic WMS - Custom Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-size: 1.2rem;
+}
+
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.table th {
+    white-space: nowrap;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+    }
+
+    h4 {
+        font-size: 1.1rem;
+    }
+
+    .table {
+        font-size: 0.85rem;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+    }
+}
+
+/* Scan input highlight */
+#barcodeInput {
+    font-size: 1.5rem;
+    text-align: center;
+    border: 2px dashed #0d6efd;
+}
+
+#barcodeInput:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+/* Status badges */
+.table-danger {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}

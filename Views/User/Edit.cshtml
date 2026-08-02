@@ -1,0 +1,50 @@
+@model WH_Logistic.Models.AppUser
+@{
+    ViewData["Title"] = "แก้ไขผู้ใช้";
+}
+
+<h4><i class="bi bi-person-gear"></i> แก้ไขผู้ใช้ - @Model.Username</h4>
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.UserId">
+    <div class="card">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">ชื่อผู้ใช้</label>
+                    <input type="text" class="form-control" value="@Model.Username" disabled />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+                    <input type="text" name="fullName" class="form-control" value="@Model.FullName" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">รหัสผ่านใหม่ (ว่างไว้ถ้าไม่เปลี่ยน)</label>
+                    <input type="password" name="newPassword" class="form-control" placeholder="รหัสผ่านใหม่" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">บทบาท</label>
+                    <select name="role" class="form-select" required>
+                        <option value="@WH_Logistic.Models.UserRole.Admin" selected="@(Model.Role == WH_Logistic.Models.UserRole.Admin)">Admin</option>
+                        <option value="@WH_Logistic.Models.UserRole.FactoryManager" selected="@(Model.Role == WH_Logistic.Models.UserRole.FactoryManager)">ผู้จัดการโรงงาน</option>
+                        <option value="@WH_Logistic.Models.UserRole.InboundStaff" selected="@(Model.Role == WH_Logistic.Models.UserRole.InboundStaff)">ผู้รับงานเข้าคลัง</option>
+                        <option value="@WH_Logistic.Models.UserRole.OutboundStaff" selected="@(Model.Role == WH_Logistic.Models.UserRole.OutboundStaff)">ผู้จ่ายงานออกคลัง</option>
+                        <option value="@WH_Logistic.Models.UserRole.WarehouseStaff" selected="@(Model.Role == WH_Logistic.Models.UserRole.WarehouseStaff)">พนักงานคลัง</option>
+                        <option value="@WH_Logistic.Models.UserRole.TransportStaff" selected="@(Model.Role == WH_Logistic.Models.UserRole.TransportStaff)">พนักงานขนส่ง</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">สถานะ</label>
+                    <select name="isActive" class="form-select">
+                        <option value="true" selected="@Model.IsActive">ใช้งาน</option>
+                        <option value="false" selected="@(!Model.IsActive)">ปิดใช้งาน</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> บันทึก</button>
+        <a asp-action="Index" class="btn btn-secondary">ยกเลิก</a>
+    </div>
+</form>

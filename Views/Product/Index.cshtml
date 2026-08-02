@@ -1,0 +1,48 @@
+@model List<WH_Logistic.Models.ProductMaster>
+@{
+    ViewData["Title"] = "จัดการสินค้า";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4><i class="bi bi-box-seam"></i> จัดการสินค้า (Master Data)</h4>
+    <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus-lg"></i> เพิ่มสินค้าใหม่</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>SKU</th>
+                <th>ชื่อสินค้า</th>
+                <th>ประเภท</th>
+                <th>บาร์โค้ด</th>
+                <th>ขนาด (กxยxส)</th>
+                <th>น้ำหนัก</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td><code>@p.SKU</code></td>
+                    <td>@p.ProductName</td>
+                    <td><span class="badge bg-info">@p.Category?.CategoryName</span></td>
+                    <td><code>@p.Barcode</code></td>
+                    <td>@p.Width x @p.Length x @p.Height cm</td>
+                    <td>@p.Weight kg</td>
+                    <td>@p.MinStock</td>
+                    <td>@p.MaxStock</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@p.ProductId" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                        <form method="post" asp-action="Delete" asp-route-id="@p.ProductId" class="d-inline" onsubmit="return confirm('ต้องการลบสินค้านี้?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

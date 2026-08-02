@@ -1,0 +1,56 @@
+@model List<WH_Logistic.Models.GoodsReceipt>
+@{
+    ViewData["Title"] = "รับสินค้าเข้า (Inbound)";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4><i class="bi bi-box-arrow-in-down"></i> รายการรับสินค้า (GRN)</h4>
+    <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus-lg"></i> สร้างใบรับสินค้าใหม่</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>เลขที่ GRN</th>
+                <th>เลขที่ PO</th>
+                <th>วันที่รับ</th>
+                <th>ผู้รับ</th>
+                <th>สถานะ</th>
+                <th>จำนวนรายการ</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var grn in Model)
+            {
+                <tr>
+                    <td><code>@grn.GRNNumber</code></td>
+                    <td>@grn.PONumber</td>
+                    <td>@grn.ReceivedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@grn.ReceivedBy?.FullName</td>
+                    <td>
+                        @switch (grn.Status)
+                        {
+                            case WH_Logistic.Models.GRNStatus.Pending:
+                                <span class="badge bg-warning">รอดำเนินการ</span>
+                                break;
+                            case WH_Logistic.Models.GRNStatus.PartiallyReceived:
+                                <span class="badge bg-info">รับบางส่วน</span>
+                                break;
+                            case WH_Logistic.Models.GRNStatus.Completed:
+                                <span class="badge bg-success">เสร็จสิ้น</span>
+                                break;
+                        }
+                    </td>
+                    <td>@grn.Items.Count รายการ</td>
+                    <td>
+                        <a asp-action="Receive" asp-route-id="@grn.GRNId" class="btn btn-sm btn-primary">
+                            <i class="bi bi-qr-code-scan"></i> สแกน/จัดเก็บ
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
